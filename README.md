@@ -24,7 +24,7 @@ A API será utilizada por sistemas internos para cadastrar, consultar, atualizar
 - GET /customers/{id} → Buscar cliente por ID.
 - PUT /customers/{id} → Atualizar dados do cliente.
 - DELETE /customers/{id} → Excluir cliente.
-- GET /customers → Listar todos os cliente ativos no sistema.
+- GET /customers → Listar todos os clientes ativos no sistema.
 
 ```sh
 +--------------------------------------+
@@ -108,7 +108,7 @@ $ git add .
 $ git commit -m 'Seu comentário'
 $ git push origin <branch>
 ```
-###### PS: Cuidado com o artefato oculto chamado .git, você tem que basear na sua repositória e não o que foi clonado!
+###### PS: Cuidado com o artefato oculto chamado .git, você tem que basear na sua repositório e não no que foi clonado!
 
 #### ** MAVEN **
 ```sh
@@ -124,10 +124,10 @@ $ mvn spring-boot:run
 #### ** Spring Boot **
 - Use o módulo Validation do Spring Boot para fazer a validação dos campos e não esqueça de implementar o GlobalExceptionHandler que aprendemos durante o hackathon.
 - Use a camada Service para aplicar a regra de negócio.
-- Não esqueça de setar os valores padrão como id (UUID randomico), datas (createdAt/updatedAt) com a data/hora corrente e ativar o registro (active) como verdadeiro (true).
+- Não esqueça de setar os valores padrão como id (UUID randômico), datas (createdAt/updatedAt) com a data/hora corrente e ativar o registro (active) como verdadeiro (true).
 
 #### ** IA/LLM **
 - Não esquecer de instalar e habilitar o Junie dentro do IntelliJ, fica dentro dos Plugins.
 - Apele ao Junie do IntelliJ para gerar o arquivo README.md do pedido do enunciado.
 - Não perca tempo criando teste unitário, não é requisito deste desafio final.
-- Com o Junio é possível criar o CRUD, mas cuidado com a adrenalina e o tempo, principalmente para não cair no labirinto sem fim.
+- Com o Junie é possível criar o CRUD, mas cuidado com a adrenalina e o tempo, principalmente para não cair no labirinto.

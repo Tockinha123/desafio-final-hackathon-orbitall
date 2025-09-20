@@ -14,7 +14,7 @@ public record TransactionRequest(
         UUID customerId,
 
         @NotNull(message = "This field is mandatory")
-        @Min(value = 0, message = "The amount must be greater than zero")
+        @Min(value = 1, message = "The amount must be greater than zero")
         BigDecimal amount,
 
         @NotBlank(message = "This field is mandatory")

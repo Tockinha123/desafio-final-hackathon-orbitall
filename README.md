@@ -1,133 +1,310 @@
-![Projeto Customers](Hackaton-Logo-dark.png)
+### README — Desafio Final Hackathon Orbitall 2025 (Channels)
 
-By [Stefanini](https://stefanini.com/).
+Este projeto é um serviço REST em Spring Boot para gestão de clientes e transações, usando banco de dados em memória H2.
 
-# Desafio Final - Hackaton Orbitall 2025 - API de Gestão de Clientes e Transações
+---
 
-### 📜 Contexto:
-Você está participando do Hackaton do setor financeiro e sua missão é desenvolver uma API REST em Java + Spring Boot para gerenciamento de clientes e registro de transações.
-A API será utilizada por sistemas internos para cadastrar, consultar, atualizar e remover dados, além de processar transações simuladas.
+### Requisitos
+- Java 21 (JDK 21)
+- Maven 3.9+
 
-### 🛠 Requisitos Técnicos
-- Java 21
-- Spring Boot
-- Banco de dados em memória H2
-- Retornar status codes corretos (HTTP)
-- Uso correto dos verbos HTTP (GET, POST, PUT, DELETE)
-- Boas práticas de nomenclatura REST (ex: /customers, /transactions)
-- Tratamento de erros e exceções
+Opcional para inspeção do banco:
+- Console H2 habilitado em `/h2-console`
 
-### 📌 Funcionalidades Obrigatórias
+---
 
-1. Clientes (/customers)
-- POST /customers → Cadastrar um novo cliente.
-- GET /customers/{id} → Buscar cliente por ID.
-- PUT /customers/{id} → Atualizar dados do cliente.
-- DELETE /customers/{id} → Excluir cliente.
-- GET /customers → Listar todos os clientes ativos no sistema.
+### Como executar a aplicação (Passo a passo)
+1) Clonar o repositório e entrar no módulo do serviço
+- O serviço está no diretório `channels/`.
 
-```sh
-+--------------------------------------+
-| Customer                             | -> nome da classe
-+--------------------------------------+
-| + id: java.util.UUID                 |
-| + fullName: String                   |
-| + email: String                      |
-| + phone: String                      | -> atributos da classe
-| + createdAt: java.time.LocalDateTime |
-| + updatedAt: java.time.LocalDateTime |
-| + active: boolean                    |
-+--------------------------------------+
-| + getters                            |
-| - setters                            | -> getters / setters da classe
-+--------------------------------------+
+2) Compilar e rodar com Maven
+- Dentro do diretório `channels/` execute:
+```
+mvn spring-boot:run
 ```
 
-2. Transações (/transactions)
-- POST /transactions → Criar uma nova transação vinculada a um cliente. A transação é composta por id, id do cliente (Customer), valor (amount), tipo de cartão como DÉBITO/CRÉDITO (cardType) e data da transação (createdAt).
-- GET /transactions?customerId=... → Listar todas as transações de um cliente.
+3) Acessar a API
+- Base URL padrão: `http://localhost:8080`
+- Console H2: `http://localhost:8080/h2-console`
+    - JDBC URL: `jdbc:h2:mem:channels`
+    - Usuário e senha podem ficar em branco (padrão do H2 em memória, a não ser que você configure diferente).
 
-```sh
-+--------------------------------------+
-| Transaction                          | -> nome da classe
-+--------------------------------------+
-| + id: java.util.UUID                 |
-| + customerId: java.util.UUID         |
-| + amount: java.math.BigDecimal       |
-| + cardType: String                   | -> atributos da classe
-| + createdAt: java.time.LocalDateTime |
-| + active: boolean                    |
-+--------------------------------------+
-| + getters                            |
-| - setters                            | -> getters / setters da classe
-+--------------------------------------+
+4) Parar a aplicação
+- Pressione `Ctrl + C` no terminal que está executando a aplicação.
+
+Observação: Os dados são voláteis (H2 em memória). A cada reinício, a base é recriada.
+
+---
+
+### Configurações principais
+Arquivo: `channels/src/main/resources/application.properties`
+- `spring.h2.console.enabled=true`
+- `spring.h2.console.path=/h2-console`
+- `spring.datasource.url=jdbc:h2:mem:channels;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE`
+
+---
+
+### Endpoints e exemplos (Postman/cURL)
+A seguir, os recursos disponíveis com exemplos de requisições e respostas. Você pode usar o Postman criando uma requisição com os mesmos métodos, URLs, headers e bodies abaixo. Também incluímos comandos cURL equivalentes.
+
+#### 1) Clientes (`/customers`)
+
+- Criar cliente
+    - Método/URL: `POST /customers`
+    - Headers: `Content-Type: application/json`
+    - Body (JSON):
+      ```json
+      {
+        "fullName": "Maria da Silva",
+        "email": "maria.silva@example.com",
+        "phone": "+55 11 99999-0000"
+      }
+      ```
+    - Resposta 201 (exemplo):
+      ```json
+      {
+        "id": "8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1",
+        "fullName": "Maria da Silva",
+        "email": "maria.silva@example.com",
+        "phone": "+55 11 99999-0000",
+        "createdAt": "2025-09-20T12:00:00",
+        "updatedAt": "2025-09-20T12:00:00",
+        "active": true
+      }
+      ```
+    - cURL:
+      ```bash
+      curl -X POST http://localhost:8080/customers \
+        -H "Content-Type: application/json" \
+        -d '{
+          "fullName": "Maria da Silva",
+          "email": "maria.silva@example.com",
+          "phone": "+55 11 99999-0000"
+        }'
+      ```
+
+- Buscar cliente por ID
+    - Método/URL: `GET /customers/{id}`
+    - Resposta 200 (exemplo):
+      ```json
+      {
+        "id": "8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1",
+        "fullName": "Maria da Silva",
+        "email": "maria.silva@example.com",
+        "phone": "+55 11 99999-0000",
+        "createdAt": "2025-09-20T12:00:00",
+        "updatedAt": "2025-09-20T12:10:00",
+        "active": true
+      }
+      ```
+    - cURL:
+      ```bash
+      curl http://localhost:8080/customers/8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1
+      ```
+
+- Listar todos os clientes
+    - Método/URL: `GET /customers`
+    - Resposta 200 (exemplo):
+      ```json
+      [
+        {
+          "id": "8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1",
+          "fullName": "Maria da Silva",
+          "email": "maria.silva@example.com",
+          "phone": "+55 11 99999-0000",
+          "createdAt": "2025-09-20T12:00:00",
+          "updatedAt": "2025-09-20T12:10:00",
+          "active": true
+        }
+      ]
+      ```
+    - cURL:
+      ```bash
+      curl http://localhost:8080/customers
+      ```
+
+- Atualizar cliente
+    - Método/URL: `PUT /customers/{id}`
+    - Headers: `Content-Type: application/json`
+    - Body (JSON):
+      ```json
+      {
+        "fullName": "Maria Souza",
+        "email": "maria.souza@example.com",
+        "phone": "+55 11 90000-1111"
+      }
+      ```
+    - Resposta 200 (exemplo): estrutura igual ao `GET /customers/{id}` com campos atualizados.
+    - cURL:
+      ```bash
+      curl -X PUT http://localhost:8080/customers/8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1 \
+        -H "Content-Type: application/json" \
+        -d '{
+          "fullName": "Maria Souza",
+          "email": "maria.souza@example.com",
+          "phone": "+55 11 90000-1111"
+        }'
+      ```
+
+- Deletar (soft delete) cliente
+    - Método/URL: `DELETE /customers/{id}`
+    - Resposta 200 (exemplo):
+      ```json
+      {
+        "id": "8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1",
+        "fullName": "Maria Souza",
+        "email": "maria.souza@example.com",
+        "phone": "+55 11 90000-1111",
+        "createdAt": "2025-09-20T12:00:00",
+        "updatedAt": "2025-09-20T12:15:00",
+        "active": false
+      }
+      ```
+    - cURL:
+      ```bash
+      curl -X DELETE http://localhost:8080/customers/8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1
+      ```
+
+Validações do payload de cliente (`CustomerRequest`):
+- `fullName`: obrigatório, até 255 caracteres
+- `email`: obrigatório, formato válido, até 100 caracteres
+- `phone`: obrigatório
+
+Erros de validação retornam 400 com um objeto contendo `campo -> mensagem`, por exemplo:
+```json
+{
+  "fullName": "This field is mandatory",
+  "email": "must be a well-formed email address"
+}
 ```
 
-### 📈 Regras de Negócio
-- Necessário validar o atributo nome completo (fullName) do Cliente (Customer) como obrigatório e tem que preencher até no máximo 255 caracteres.
-- Necessário validar o atributo e-mail (email) do Cliente (Customer) como obrigatório e tem que preencher até no máximo 100 caracteres.
-- Necessário validar o atributo telefone (phone) do Cliente (Customer) como obrigatório.
-- Não permitir transações para clientes inexistentes (retornar 404 Not Found).
-- Necessário validar o atributo cliente (customerId) da Transação (Transaction) como obrigatório e cliente válido.
-- Necessário validar o atributo valor (amount) da transação (Transaction) como obrigatório e maior que zero.
-- Necessário validar o atributo tipo de cartão (cardType) da Transação (Transaction) como obrigatório e valor como DÉBITO OU CRÉDITO.
-
-### 💡 Diferenciais (Extra Points)
-- Implementar tratamento global de erros com @ControllerAdvice.
-
-### 📂 Entrega
-- Código fonte em repositório git público (GitHub).
-- README.md explicando:
-  - Passo a passo para rodar a aplicação. 
-  - Endpoints e exemplos de requisições/respostas (com Postman).
-  - Dependências utilizadas.
-
-Desejamos uma boa prova, sucesso e BOA SORTE!!!
-
-Orbitall Payments Teams - 20/Setembro/2025
-- - Amanda Queiroz
-- - Gabriela De Oliveira
-- - Leandro Capuano
-- - Luis Forcinnetti
-- - Maysa Hoffmann
-- - Rodrigo Bibiano 
-- - Sérgio Sampaio
-
-<br>
-
-![Projeto Customers](codigo-de-barras.png)
-
-<br>
-
-### *** DICAS ****
-
-#### ** GIT **
-```sh
-$ git clone <branch>
-$ git add .
-$ git commit -m 'Seu comentário'
-$ git push origin <branch>
-```
-###### PS: Cuidado com o artefato oculto chamado .git, você tem que basear na sua repositório e não no que foi clonado!
-
-#### ** MAVEN **
-```sh
-$ mvn clean
-$ mvn install
-$ mvn spring-boot:run
+Erros de recurso não encontrado retornam 404:
+```json
+{
+  "timestamp": "2025-09-20T12:34:56.789",
+  "status": 404,
+  "error": "Resource not found",
+  "message": "No Customer found with id {UUID}"
+}
 ```
 
-#### ** Lombok **
-- Não esqueça de habilitar o Lombok como Plugin dentro do IntelliJ.
-- Apele para o Lombok gerar os setters/getters através da anotação @Data.
+#### 2) Transações (`/transactions`)
 
-#### ** Spring Boot **
-- Use o módulo Validation do Spring Boot para fazer a validação dos campos e não esqueça de implementar o GlobalExceptionHandler que aprendemos durante o hackathon.
-- Use a camada Service para aplicar a regra de negócio.
-- Não esqueça de setar os valores padrão como id (UUID randômico), datas (createdAt/updatedAt) com a data/hora corrente e ativar o registro (active) como verdadeiro (true).
+- Criar transação
+    - Método/URL: `POST /transactions`
+    - Headers: `Content-Type: application/json`
+    - Body (JSON):
+      ```json
+      {
+        "customerId": "8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1",
+        "amount": 150.75,
+        "cardType": "CRÉDITO"
+      }
+      ```
+      Observações:
+        - `customerId` deve referenciar um cliente existente e ativo.
+        - `amount` deve ser maior que zero.
+        - `cardType` deve ser exatamente `DÉBITO` ou `CRÉDITO` (com acento).
+    - Resposta 201 (exemplo):
+      ```json
+      {
+        "id": "b1d2aa1b-2bcb-4a27-8c42-8ce8c9f8af7c",
+        "customerId": "8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1",
+        "amount": 150.75,
+        "cardType": "CRÉDITO",
+        "createdAt": "2025-09-20T12:20:00",
+        "active": true
+      }
+      ```
+    - cURL:
+      ```bash
+      curl -X POST http://localhost:8080/transactions \
+        -H "Content-Type: application/json" \
+        -d '{
+          "customerId": "8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1",
+          "amount": 150.75,
+          "cardType": "CRÉDITO"
+        }'
+      ```
 
-#### ** IA/LLM **
-- Não esquecer de instalar e habilitar o Junie dentro do IntelliJ, fica dentro dos Plugins.
-- Apele ao Junie do IntelliJ para gerar o arquivo README.md do pedido do enunciado.
-- Não perca tempo criando teste unitário, não é requisito deste desafio final.
-- Com o Junie é possível criar o CRUD, mas cuidado com a adrenalina e o tempo, principalmente para não cair no labirinto.
+- Listar transações por cliente
+    - Método/URL: `GET /transactions?customerId={UUID}`
+    - Resposta 200 (exemplo):
+      ```json
+      [
+        {
+          "id": "b1d2aa1b-2bcb-4a27-8c42-8ce8c9f8af7c",
+          "customerId": "8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1",
+          "amount": 150.75,
+          "cardType": "CRÉDITO",
+          "createdAt": "2025-09-20T12:20:00",
+          "active": true
+        }
+      ]
+      ```
+    - cURL:
+      ```bash
+      curl "http://localhost:8080/transactions?customerId=8a7c4c5e-4d3b-4d8e-9c8e-4a6bd5d9f3a1"
+      ```
+
+Erros comuns em transações:
+- Cliente inexistente/inativo: 404 `{"message": "Customer not found"}`
+- Validação de payload: 400 com `campo -> mensagem` (por exemplo, `cardType` fora do padrão)
+
+---
+
+### Coleção Postman (como usar)
+- No Postman, crie uma nova Collection "Channels API".
+- Adicione as requisições conforme descrito:
+    - `POST http://localhost:8080/customers`
+    - `GET http://localhost:8080/customers/{id}`
+    - `GET http://localhost:8080/customers`
+    - `PUT http://localhost:8080/customers/{id}`
+    - `DELETE http://localhost:8080/customers/{id}`
+    - `POST http://localhost:8080/transactions`
+    - `GET http://localhost:8080/transactions?customerId={UUID}`
+- Configure o header `Content-Type: application/json` nos métodos `POST` e `PUT`.
+- Use os bodies de exemplo acima.
+
+Se preferir importar via cURL, use os comandos informados para testar rapidamente pelo terminal.
+
+---
+
+### Dependências utilizadas (pom.xml)
+- `spring-boot-starter-web` — Criação de APIs REST
+- `spring-boot-starter-data-jpa` — Persistência JPA/Hibernate
+- `spring-boot-starter-validation` — Validações com Jakarta Validation
+- `spring-boot-starter-actuator` — Endpoints de monitoramento/saúde
+- `com.h2database:h2` — Banco de dados em memória H2 (runtime)
+- `org.projectlombok:lombok` — Redução de boilerplate (getters/setters, builders, etc.)
+- `spring-boot-starter-test` — Testes (escopo de teste)
+
+Java: `21` (configurado em `pom.xml`)
+
+---
+
+### Estrutura básica do domínio
+- `Customer` (cliente): `id`, `fullName`, `email`, `phone`, `createdAt`, `updatedAt`, `active`
+- `Transaction` (transação): `id`, `customerId`, `amount`, `cardType`, `createdAt`, `active`
+
+Regra de negócio principal:
+- Transações só podem ser criadas para clientes ativos; do contrário, retorna 404.
+
+---
+
+### Tratamento de erros
+- Validação (`400 BAD REQUEST`): retorna mapa de `campo -> mensagem`
+- Recurso não encontrado (`404 NOT FOUND`): payload com `timestamp`, `status`, `error`, `message`
+- Erro genérico (`500 INTERNAL SERVER ERROR`): payload com `timestamp`, `status`, `error`, `message`
+
+---
+
+### Dicas
+- Ao testar `cardType` use exatamente `DÉBITO` ou `CRÉDITO` (incluindo acento).
+- Lembre-se de criar um cliente antes de criar uma transação e usar o `id` retornado no `customerId`.
+- Para inspecionar tabelas no H2 Console, use JDBC URL `jdbc:h2:mem:channels` e clique em Connect.
+
+---
+
+### BÔNUS :D
+- Olá, sou eu vitor ! Se você está lendo isso eu deixei um "easter egg" no código. Se você achou, PARABÉNS :DDDD !!

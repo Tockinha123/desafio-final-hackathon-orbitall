@@ -130,3 +130,4 @@ $ mvn spring-boot:run
 - Não esquecer de instalar e habilitar o Junie dentro do IntelliJ, fica dentro dos Plugins.
 - Apele ao Junie do IntelliJ para gerar o arquivo README.md do pedido do enunciado.
 - Não perca tempo criando teste unitário, não é requisito deste desafio final.
+- Com o Junio é possível criar o CRUD, mas cuidado com a adrenalina e o tempo, principalmente para não cair no labirinto sem fim.

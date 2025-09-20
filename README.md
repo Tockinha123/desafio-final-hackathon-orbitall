@@ -1,4 +1,4 @@
-![Projeto Customers](Hackaton-Logo-light.png)
+![Projeto Customers](Hackaton-Logo-dark.png)
 
 By [Stefanini](https://stefanini.com/).
 

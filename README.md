@@ -1,3 +1,8 @@
+![Star Wars Characteres](background.jpg)
+By: https://i.pinimg.com/736x/55/9b/eb/559beb42c00c7240e80f58e59595f12b.jpg
+
+---
+
 ### README — Desafio Final Hackathon Orbitall 2025 (Channels)
 
 Este projeto é um serviço REST em Spring Boot para gestão de clientes e transações, usando banco de dados em memória H2.
